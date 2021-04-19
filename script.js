@@ -15,7 +15,7 @@ createButton.onclick = ()=>{
    image.classList.add('image')
 
    close = document.createElement('img')
-   close.src = 'delete.png'
+   close.src = 'filedelete.png'
    close.onclick = getOnclick(image)
    image.appendChild(close)
 
