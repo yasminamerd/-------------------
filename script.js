@@ -5,26 +5,57 @@ ileLoader = document.querySelector('#fileLoader')
 background = ''
 
 
-getOnclick = (Image) => {
-    return () => {app.removeChild(Image)}
+getOnclick = (image) => {
+    return () => {
+        //TODO: доделать сохранение картинок
+    }
 }
 
-createButton.onclick = ()=>{
-   image = document.createElement('div')
-   image.style.backgroundImage = `url(${background})`
-   image.classList.add('image')
+createImage = () => {
+    return () => {
+        image = document.createElement('div')
+        image.style.backgroundImage = `url(${background})`
+        image.classList.add('image')
 
-   close = document.createElement('img')
-   close.src = 'filedelete.png'
-   close.onclick = getOnclick(image)
-   image.appendChild(close)
+        const position = {x:0, y:0}
+        interact('.image').draggable({
+            listeners: {
+                move (event) {
+                    position.x += event.dx
+                    position.y += event.dy
+                    event.target.style.top = `${position.y}px`
+                    event.target.style.left = `${position.x}px`
+                },
+            }
+        })
+        
+        interact('.image').resizable({
+            edges: { top: true, left: true, bottom: true, right: true },
+            listeners: {
+                move: function (event) {
+                    let { x, y } = event.target.dataset
 
-   app.appendChild(image)
+                    x = (parseFloat(x) || 0) + event.deltaRect.left
+                    y = (parseFloat(y) || 0) + event.deltaRect.top
 
-   $('.image').draggable({ grid: [5,5], contaiment: "#app", scroll: false});
-   $('.image').resizable({ grid: 5})
+                    Object.assign(event.target.style, {
+                        width: `${event.rect.width}px`,
+                        height: `${event.rect.height}px`
+                    })
 
+                    Object.assign(event.target.dataset, { x, y })
+                }
+            }
+        })
+
+        image.onclick = getOnclick(image)
+
+        app.appendChild(image)
+    }
 }
+
+createButton.onclick = createImage()
+
 fileLoader.onchange = ()=> {
     file = fileLoader.files[0]
 
